@@ -111,7 +111,8 @@ function! s:merge_recents(left, right) " {{{
 endfunction " }}}
 
 function! chbuf#common#get_recents_file_path() " {{{
-    let dotdir = simplify(expand($HOME . g:chbuf#common#unescaped_path_seg_sep . ".vim"))
+    let dirname = get(g:, 'chbuf_recent_file_name', '.vim')
+    let dotdir = simplify(expand($HOME . g:chbuf#common#unescaped_path_seg_sep . dirname))
     if !isdirectory(dotdir)
         call mkdir(dotdir)
     endif
@@ -168,4 +169,4 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 
-" vim:foldmethod=marker
+" vim:foldmethod=marker shiftwidth=4 expandtab
