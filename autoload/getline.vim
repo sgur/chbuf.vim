@@ -378,4 +378,4 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 
-" vim:foldmethod=marker
+" vim:foldmethod=marker shiftwidth=4 expandtab
