@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 
 " {{{ Data Source: Internal
@@ -132,11 +132,11 @@ endfunction " }}}
 
 function! s:is_file_system_object(path) " {{{
     let type = getftype(a:path)
-    if type == 'file' || type == 'dir'
+    if type ==# 'file' || type ==# 'dir'
         return 1
-    elseif type == 'link'
+    elseif type ==# 'link'
         let resolved = getftype(resolve(a:path))
-        return resolved == 'file' || resolved == 'dir'
+        return resolved ==# 'file' || resolved ==# 'dir'
     endif
 
     return 0
@@ -152,7 +152,7 @@ endfunction " }}}
 function! s:get_oldfiles(ignored_pattern) abort "{{{
     let result = map(copy(v:oldfiles), 's:buffer_from_path(v:val)')
 
-    if a:ignored_pattern == ""
+    if a:ignored_pattern ==# ''
         return result
     endif
 
@@ -161,32 +161,11 @@ function! s:get_oldfiles(ignored_pattern) abort "{{{
 endfunction " }}}
 
 function! s:get_buffers(ignored_pattern) " {{{
-    let result = []
-
-    for buffer in range(1, bufnr('$'))
-        let score = 0
-
-        if !bufexists(buffer)
-            continue
-        endif
-
-        if !chbuf#common#is_good_buffer(buffer)
-            continue
-        endif
-
-        if buffer == bufnr('%')
-            continue
-        endif
-
-        let buf = s:buffer_from_number(buffer, bufname(buffer))
-        if buf.path && buf.path =~ a:ignored_pattern
-            continue
-        endif
-
-        call add(result, buf)
-    endfor
-
-    return result
+    let current_bufnr = bufnr('%')
+    return filter(map(
+                \   filter(range(1, bufnr('$')), 'bufexists(v:val) && chbuf#common#is_good_buffer(v:val) && v:val != current_bufnr'),
+                \   's:buffer_from_number(v:val, bufname(v:val))'),
+                \ '!empty(v:val.path) && v:val.path =~ a:ignored_pattern')
 endfunction " }}}
 
 function! s:segmentwise_shortest_unique_prefix(cur, ref) " {{{
@@ -336,7 +315,7 @@ function! s:guarded_space(state, key) " {{{
         return {'state': a:state}
     endif
 
-    if a:state.contents =~ '\v\s$'
+    if a:state.contents =~# '\v\s$'
         return {'state': a:state}
     endif
 
@@ -349,10 +328,10 @@ endfunction " }}}
 
 function! s:chdir(state, key) " {{{
     let result = a:state.data[0]
-    if a:key == 'CTRL-I'
+    if a:key ==# 'CTRL-I'
         call result.cd()
         return {'final': ':cd ' . result.dir()}
-    elseif a:key == 'CTRL-L'
+    elseif a:key ==# 'CTRL-L'
         call result.lcd()
         return {'final': ':lcd ' . result.dir()}
     else
@@ -383,15 +362,15 @@ function! s:change(result) " {{{
     let buffer = a:result.value
     let key = a:result.key
 
-    if key == 'CTRL-M'
+    if key ==# 'CTRL-M'
         call buffer.change()
-    elseif key == 'CTRL-T'
+    elseif key ==# 'CTRL-T'
         execute 'tabnew'
         call buffer.change()
-    elseif key == 'CTRL-S'
+    elseif key ==# 'CTRL-S'
         execute 'split'
         call buffer.change()
-    elseif key == 'CTRL-V'
+    elseif key ==# 'CTRL-V'
         execute 'vsplit'
         call buffer.change()
     endif
@@ -458,21 +437,21 @@ function! s:error(msg) " {{{
 endfunction " }}}
 
 function! chbuf#spotlight_current(query) " {{{
-    let output = system(printf("mdfind -onlyin %s %s", shellescape(getcwd()), shellescape(a:query)))
+    let output = system(printf('mdfind -onlyin %s %s', shellescape(getcwd()), shellescape(a:query)))
     if v:shell_error > 0
-        call s:error("mdfind: " . substitute(output, "\\v\n*$", "", ""))
+        call s:error('mdfind: ' . substitute(output, "\\v\n*$", '', ''))
         return
     endif
-    let paths = map(split(output, "\n"), 'fnamemodify(v:val, ":.")')
+    let paths = map(split(output, "\n"), 'fnamemodify(v:val, '':.'')')
     let buffers = map(paths, 's:buffer_from_relative_path(v:val)')
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'relative')
     return s:choose_path_interactively(buffers)
 endfunction " }}}
 
 function! chbuf#spotlight(query) " {{{
-    let output = system(printf("mdfind %s", shellescape(a:query)))
+    let output = system(printf('mdfind %s', shellescape(a:query)))
     if v:shell_error > 0
-        call s:error("mdfind: " . substitute(output, "\\v\n*$", "", ""))
+        call s:error('mdfind: ' . substitute(output, "\\v\n*$", '', ''))
         return
     endif
     let buffers = map(split(output, "\n"), 's:buffer_from_path(v:val)')
@@ -482,7 +461,7 @@ endfunction " }}}
 " }}}
 
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 

@@ -16,9 +16,9 @@ function! chbuf#oldfiles#add(bufnr) abort " {{{
         return
     endif
 
-    let max_entries = get(map(filter(split(&viminfo, ','), 'v:val[0] == "''"'), 'v:val[1:]'), 0, 100)
+    let max_entries = get(map(filter(split(&viminfo, ','), 'v:val[0] ==# "''"'), 'v:val[1:]'), 0, 100)
 
-    let path = simplify(fnamemodify(bufname(a:bufnr), ":p:~"))
+    let path = simplify(fnamemodify(bufname(a:bufnr), ':p:~'))
     let idx = index(v:oldfiles, path)
     if idx > -1
         call remove(v:oldfiles, idx)

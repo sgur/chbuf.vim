@@ -4,8 +4,8 @@ endif
 
 let g:autoloaded_chbuf_common = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 
 if !exists('+shellslash') || &shellslash
@@ -34,7 +34,7 @@ function! chbuf#common#is_good_buffer(buffer) " {{{
         return 0
     endif
 
-    if bufname(a:buffer) == ''
+    if bufname(a:buffer) ==# ''
         return 0
     endif
 
@@ -42,7 +42,7 @@ function! chbuf#common#is_good_buffer(buffer) " {{{
 endfunction " }}}
 
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 

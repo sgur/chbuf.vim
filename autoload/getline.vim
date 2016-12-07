@@ -1,8 +1,8 @@
 scriptencoding utf-8
 
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 
 " This accounts for 'showcmd'.  Is there a way to calculate it?
@@ -48,36 +48,36 @@ let s:key_from_int = { 0: 'CTRL-@'
                     \, 37: '%'
                     \, 38: '&'
                     \, 39: "'"
-                    \, 40: "("
-                    \, 41: ")"
-                    \, 42: "*"
-                    \, 43: "+"
-                    \, 44: ","
-                    \, 45: "-"
-                    \, 46: "."
-                    \, 47: "/"
-                    \, 48: "0"
-                    \, 49: "1"
-                    \, 50: "2"
-                    \, 51: "3"
-                    \, 52: "4"
-                    \, 53: "5"
-                    \, 54: "6"
-                    \, 55: "7"
-                    \, 56: "8"
-                    \, 57: "9"
-                    \, 58: ":"
-                    \, 59: ";"
-                    \, 60: "<"
-                    \, 61: "="
-                    \, 62: ">"
-                    \, 63: "?"
-                    \, 64: "@"
+                    \, 40: '('
+                    \, 41: ')'
+                    \, 42: '*'
+                    \, 43: '+'
+                    \, 44: ','
+                    \, 45: '-'
+                    \, 46: '.'
+                    \, 47: '/'
+                    \, 48: '0'
+                    \, 49: '1'
+                    \, 50: '2'
+                    \, 51: '3'
+                    \, 52: '4'
+                    \, 53: '5'
+                    \, 54: '6'
+                    \, 55: '7'
+                    \, 56: '8'
+                    \, 57: '9'
+                    \, 58: ':'
+                    \, 59: ';'
+                    \, 60: '<'
+                    \, 61: '='
+                    \, 62: '>'
+                    \, 63: '?'
+                    \, 64: '@'
                     \, 127: 'CTRL-?'
                     \}
 
-let s:key_from_str = { "\x80kb": "CTRL-H"
-                    \, "\x80kD": "CTRL-?"
+let s:key_from_str = { "\x80kb": 'CTRL-H'
+                    \, "\x80kD": 'CTRL-?'
                     \}
 
 
@@ -89,7 +89,7 @@ function! s:without_last_word(string) " {{{
     let result = substitute(a:string, '\v(\S+)\s+\S+$', '\1', '')
 
     if result == a:string
-        let result = ""
+        let result = ''
     endif
 
     return result
@@ -137,14 +137,14 @@ function! s:show_prompt_and_contents() dict " {{{
 endfunction " }}}
 
 function! s:make_state(config) " {{{
-    let candidates = a:config.callback("")
+    let candidates = a:config.callback('')
     if candidates == {}
         return {}
     endif
 
     let state                           = {}
     let state.config                    = a:config
-    let state.contents                  = ""
+    let state.contents                  = ''
     let state.data                      = get(candidates, 'data', '')
     let state.hint                      = get(candidates, 'hint', '')
     let state.transition                = function('s:transition_state')
@@ -157,7 +157,7 @@ endfunction " }}}
 
 function! s:rubber(displayed) " {{{
     return "\r" . substitute(a:displayed, '.', ' ', 'g') . "\r"
-endfunction! " }}}
+endfunction " }}}
 
 function! s:without_last_char(s) " {{{
     return substitute(a:s, '\v.$', '', '')
@@ -246,31 +246,31 @@ let s:transition_from_key =
     \, '%': function('s:self_insert')
     \, '&': function('s:self_insert')
     \, "'": function('s:self_insert')
-    \, "(": function('s:self_insert')
-    \, ")": function('s:self_insert')
-    \, "*": function('s:self_insert')
-    \, "+": function('s:self_insert')
-    \, ",": function('s:self_insert')
-    \, "-": function('s:self_insert')
-    \, ".": function('s:self_insert')
-    \, "/": function('s:self_insert')
-    \, "0": function('s:self_insert')
-    \, "1": function('s:self_insert')
-    \, "2": function('s:self_insert')
-    \, "3": function('s:self_insert')
-    \, "4": function('s:self_insert')
-    \, "5": function('s:self_insert')
-    \, "6": function('s:self_insert')
-    \, "7": function('s:self_insert')
-    \, "8": function('s:self_insert')
-    \, "9": function('s:self_insert')
-    \, ":": function('s:self_insert')
-    \, ";": function('s:self_insert')
-    \, "<": function('s:self_insert')
-    \, "=": function('s:self_insert')
-    \, ">": function('s:self_insert')
-    \, "?": function('s:self_insert')
-    \, "@": function('s:self_insert')
+    \, '(': function('s:self_insert')
+    \, ')': function('s:self_insert')
+    \, '*': function('s:self_insert')
+    \, '+': function('s:self_insert')
+    \, ',': function('s:self_insert')
+    \, '-': function('s:self_insert')
+    \, '.': function('s:self_insert')
+    \, '/': function('s:self_insert')
+    \, '0': function('s:self_insert')
+    \, '1': function('s:self_insert')
+    \, '2': function('s:self_insert')
+    \, '3': function('s:self_insert')
+    \, '4': function('s:self_insert')
+    \, '5': function('s:self_insert')
+    \, '6': function('s:self_insert')
+    \, '7': function('s:self_insert')
+    \, '8': function('s:self_insert')
+    \, '9': function('s:self_insert')
+    \, ':': function('s:self_insert')
+    \, ';': function('s:self_insert')
+    \, '<': function('s:self_insert')
+    \, '=': function('s:self_insert')
+    \, '>': function('s:self_insert')
+    \, '?': function('s:self_insert')
+    \, '@': function('s:self_insert')
     \}
 
 function! s:get_line_custom(config) " {{{
@@ -297,7 +297,7 @@ function! s:get_line_custom(config) " {{{
                 let new_contents = state.contents . nr2char(key)
                 let result = {'state': state.transition(new_contents)}
             endif
-        elseif type(key) == type("")
+        elseif type(key) == type('')
             if has_key(s:key_from_str, key)
                 let name = s:key_from_str[key]
                 let Trans = get(state.config.transitions, name, function('s:self_insert'))
@@ -307,7 +307,7 @@ function! s:get_line_custom(config) " {{{
                 let result = {'state': state}
             endif
         else
-            throw "getline: getchar() returned value of unknown type"
+            throw 'getline: getchar() returned value of unknown type'
         endif
 
         if result == {}
@@ -370,7 +370,7 @@ function! getline#get_line() " {{{
 endfunction " }}}
 
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 
