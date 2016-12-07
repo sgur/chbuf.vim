@@ -5,16 +5,6 @@ set cpo&vim
 
 
 " {{{ Data Source: Internal
-function! s:get_script_id() " {{{
-    return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze_get_script_id$')
-endfun " }}}
-
-let s:script_id = s:get_script_id()
-
-function! s:make_ref(name) " {{{
-    return function(printf('<SNR>%s_%s', s:script_id, a:name))
-endfunction " }}}
-
 function! s:change_to_number() dict " {{{
     execute 'silent' 'buffer' self.number
 endfunction " }}}
@@ -70,12 +60,12 @@ function! s:buffer_from_number(number, name) " {{{
     return { 'number':          a:number
           \, 'path':            path
           \, 'name':            a:name
-          \, 'change':          s:make_ref('change_to_number')
-          \, 'is_choosable':    s:make_ref('is_number_choosable')
-          \, 'set_suffix':      s:make_ref(set_suf_fn)
-          \, 'dir':             s:make_ref(dir_fn)
-          \, 'cd':              s:make_ref('cd_buffer')
-          \, 'lcd':             s:make_ref('lcd_buffer')
+          \, 'change':          function('s:change_to_number')
+          \, 'is_choosable':    function('s:is_number_choosable')
+          \, 'set_suffix':      function('s:' . set_suf_fn)
+          \, 'dir':             function('s:' . dir_fn)
+          \, 'cd':              function('s:cd_buffer')
+          \, 'lcd':             function('s:lcd_buffer')
           \}
 endfunction " }}}
 
@@ -100,12 +90,12 @@ function! s:buffer_from_path(path) " {{{
     endif
 
     return { 'path':            expanded
-          \, 'change':          s:make_ref('change_to_path')
-          \, 'is_choosable':    s:make_ref('path_choosable')
-          \, 'set_suffix':      s:make_ref(set_suf_fn)
-          \, 'dir':             s:make_ref(dir_fn)
-          \, 'cd':              s:make_ref('cd_buffer')
-          \, 'lcd':             s:make_ref('lcd_buffer')
+          \, 'change':          function('s:change_to_path')
+          \, 'is_choosable':    function('s:path_choosable')
+          \, 'set_suffix':      function('s:' . set_suf_fn)
+          \, 'dir':             function('s:' . dir_fn)
+          \, 'cd':              function('s:cd_buffer')
+          \, 'lcd':             function('s:lcd_buffer')
           \}
 endfunction " }}}
 
@@ -123,12 +113,12 @@ function! s:buffer_from_relative_path(relative) " {{{
 
     return { 'relative':        a:relative
           \, 'path':            absolute
-          \, 'change':          s:make_ref('change_to_path')
-          \, 'is_choosable':    s:make_ref('path_choosable')
-          \, 'set_suffix':      s:make_ref(set_suf_fn)
-          \, 'dir':             s:make_ref(dir_fn)
-          \, 'cd':              s:make_ref('cd_buffer')
-          \, 'lcd':             s:make_ref('lcd_buffer')
+          \, 'change':          function('s:change_to_path')
+          \, 'is_choosable':    function('s:path_choosable')
+          \, 'set_suffix':      function('s:' . set_suf_fn)
+          \, 'dir':             function('s:' . dir_fn)
+          \, 'cd':              function('s:cd_buffer')
+          \, 'lcd':             function('s:lcd_buffer')
           \}
 endfunction " }}}
 
@@ -371,19 +361,19 @@ function! s:chdir(state, key) " {{{
 endfunction " }}}
 
 let s:key_handlers =
-    \{ 'CTRL-S': s:make_ref('accept')
-    \, 'CTRL-V': s:make_ref('accept')
-    \, 'CTRL-T': s:make_ref('accept')
-    \, 'CTRL-M': s:make_ref('accept')
-    \, 'CTRL-Y': s:make_ref('yank')
-    \, 'CTRL-L': s:make_ref('chdir')
-    \, 'CTRL-I': s:make_ref('chdir')
-    \, ' ': s:make_ref('guarded_space')
+    \{ 'CTRL-S': function('s:accept')
+    \, 'CTRL-V': function('s:accept')
+    \, 'CTRL-T': function('s:accept')
+    \, 'CTRL-M': function('s:accept')
+    \, 'CTRL-Y': function('s:yank')
+    \, 'CTRL-L': function('s:chdir')
+    \, 'CTRL-I': function('s:chdir')
+    \, ' '     : function('s:guarded_space')
     \}
 
 function! s:prompt(buffers) " {{{
     let w:chbuf_cache = a:buffers
-    let result = getline#get_line_reactively_override_keys(s:make_ref('get_line_callback'), s:key_handlers)
+    let result = getline#get_line_reactively_override_keys(function('s:get_line_callback'), s:key_handlers)
     unlet w:chbuf_cache
     return result
 endfunction " }}}
