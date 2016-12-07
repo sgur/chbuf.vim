@@ -308,8 +308,8 @@ function! s:render_hint(buffers) " {{{
     endif
 endfunction " }}}
 
-function! s:get_line_callback(input) " {{{
-    let matching = s:filter_matching(a:input, copy(w:chbuf_cache))
+function! s:get_line_callback(cache, input) " {{{
+    let matching = s:filter_matching(a:input, copy(a:cache))
 
     if len(matching) == 0
         return {}
@@ -372,9 +372,7 @@ let s:key_handlers =
     \}
 
 function! s:prompt(buffers) " {{{
-    let w:chbuf_cache = a:buffers
-    let result = getline#get_line_reactively_override_keys(function('s:get_line_callback'), s:key_handlers)
-    unlet w:chbuf_cache
+    let result = getline#get_line_reactively_override_keys(function('s:get_line_callback', [a:buffers]), s:key_handlers)
     return result
 endfunction " }}}
 
