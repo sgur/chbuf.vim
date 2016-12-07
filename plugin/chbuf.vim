@@ -11,6 +11,7 @@ set cpo&vim
 command! -nargs=* ChangeBuffer call chbuf#change_buffer(<q-args>)
 command! -nargs=* ChangeMixed call chbuf#change_mixed(<q-args>)
 command! -nargs=? ChangeFileSystem call chbuf#change_current(<q-args>)
+command! -nargs=? ChangeOldfiles call chbuf#change_oldfiles(<q-args>)
 
 
 if has('mac')
@@ -21,8 +22,7 @@ endif
 
 augroup chbuf
     autocmd!
-    autocmd BufAdd,BufEnter,BufLeave,BufWritePost * call chbuf#common#add_recent(0 + expand('<abuf>'))
-    autocmd VimLeavePre * call chbuf#common#store_recents()
+    autocmd BufAdd,BufEnter,BufLeave,BufWritePost * call chbuf#oldfiles#add(0 + expand('<abuf>'))
 augroup END
 
 

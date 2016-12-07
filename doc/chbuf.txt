@@ -29,6 +29,13 @@ COMMANDS                                                    *chbuf-commands*
 
     This command honours 'ignorecase'.
 
+*:ChangeOldfiles* [|pattern|]
+
+    Jumps to a file from |v:oldfiles|.  Buffers matching
+    |pattern| are not shown.
+
+    This command honours 'ignorecase'.
+
 *:ChangeMixed* [|pattern|]
 
     Jumps to loaded buffer OR a file from |v:oldfiles|.  Buffers matching

@@ -163,12 +163,8 @@ function! s:get_glob_objects(glob_pattern) " {{{
     return paths
 endfunction " }}}
 
-function! s:get_recents(ignored_pattern) " {{{
-    if !exists("g:chbuf_recent_paths")
-        let g:chbuf_recent_paths = chbuf#common#load_recents(chbuf#common#get_recents_file_path())
-    endif
-
-    let result = map(copy(g:chbuf_recent_paths), 's:buffer_from_path(v:val[1])')
+function! s:get_oldfiles(ignored_pattern) abort "{{{
+    let result = map(copy(v:oldfiles), 's:buffer_from_path(v:val)')
 
     if a:ignored_pattern == ""
         return result
@@ -428,7 +424,7 @@ function! chbuf#change_buffer(ignored_pattern) " {{{
 endfunction " }}}
 
 function! chbuf#change_mixed(ignored_pattern) " {{{
-    let buffers = extend(s:get_buffers(a:ignored_pattern), s:get_recents(a:ignored_pattern))
+    let buffers = extend(s:get_buffers(a:ignored_pattern), s:get_oldfiles(a:ignored_pattern))
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'path')
     return s:choose_path_interactively(buffers)
 endfunction " }}}
@@ -438,6 +434,13 @@ function! chbuf#change_current(glob_pattern) " {{{
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'relative')
     return s:choose_path_interactively(buffers)
 endfunction " }}}
+
+function! chbuf#change_oldfiles(ignored_pattern)  "{{{
+    let buffers = s:get_oldfiles(a:ignored_pattern)
+    let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'path')
+    return s:choose_path_interactively(buffers)
+endfunction "}}}
+
 " }}}
 
 " {{{ Data Source: External
