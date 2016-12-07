@@ -1,8 +1,4 @@
-if exists('g:autoloaded_chbuf') || &compatible || v:version < 700
-    finish
-endif
-
-let g:autoloaded_chbuf = 1
+scriptencoding utf-8
 
 let s:save_cpo = &cpo
 set cpo&vim

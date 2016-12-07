@@ -1,8 +1,4 @@
-if exists('g:autoloaded_getline') || &compatible || v:version < 700
-    finish
-endif
-
-let g:autoloaded_getline = 1
+scriptencoding utf-8
 
 
 let s:save_cpo = &cpo

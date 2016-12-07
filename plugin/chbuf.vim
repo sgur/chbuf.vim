@@ -1,8 +1,10 @@
-if exists('g:chbuf_plugin_loaded') || &compatible || v:version < 700
+scriptencoding utf-8
+
+if get(g:, 'loaded_chbuf', 0) || &compatible || v:version < 800
     finish
 endif
 
-let g:chbuf_plugin_loaded = 1
+let g:loaded_chbuf = 1
 
 let s:save_cpo = &cpo
 set cpo&vim

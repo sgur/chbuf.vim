@@ -1,10 +1,17 @@
 scriptencoding utf-8
 
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 
-" Interface {{{1
+" {{{ Data Source: Internal
 
-function! chbuf#oldfiles#add(bufnr) abort
+
+" }}}
+
+" {{{ Data Source: External
+
+function! chbuf#oldfiles#add(bufnr) abort " {{{
     if !chbuf#common#is_good_buffer(a:bufnr)
         return
     endif
@@ -18,15 +25,12 @@ function! chbuf#oldfiles#add(bufnr) abort
     endif
     call insert(v:oldfiles, path)
     let v:oldfiles = v:oldfiles[: max_entries-1]
-endfunction
-
-" Internal {{{1
-
-
-" Initialization {{{1
+endfunction " }}}
+" }}}
 
 
+let &cpoptions = s:save_cpo
+unlet s:save_cpo
 
-" 1}}}
 
 " vim:foldmethod=marker shiftwidth=4 expandtab
