@@ -24,7 +24,8 @@ endif
 
 augroup chbuf
     autocmd!
-    autocmd BufAdd,BufEnter,BufLeave,BufWritePost * call chbuf#oldfiles#add(0 + expand('<abuf>'))
+    autocmd BufAdd,BufEnter,BufLeave,BufWritePost *
+                \ if !(has('vim_starting') && argc() == 0) | call chbuf#oldfiles#add(0 + expand('<abuf>')) | endif
 augroup END
 
 
