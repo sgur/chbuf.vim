@@ -339,6 +339,14 @@ function! s:chdir(state, key) " {{{
     endif
 endfunction " }}}
 
+function! s:reset(state, key) " {{{
+    if a:key ==# 'CTRL-_'
+        return {'result': a:state.data[0]}
+    else
+        throw 'Unhandled key: ' . a:key
+    endif
+endfunction " }}}
+
 let s:key_handlers =
     \{ 'CTRL-S': function('s:accept')
     \, 'CTRL-V': function('s:accept')
@@ -347,6 +355,7 @@ let s:key_handlers =
     \, 'CTRL-Y': function('s:yank')
     \, 'CTRL-L': function('s:chdir')
     \, 'CTRL-I': function('s:chdir')
+    \, 'CTRL-_': function('s:reset')
     \, ' '     : function('s:guarded_space')
     \}
 
@@ -362,11 +371,10 @@ function! s:change(result) " {{{
     let buffer = a:result.value
     let key = a:result.key
 
-    if isdirectory(buffer.path)
-        return buffer.path
-    endif
-
     if key ==# 'CTRL-M'
+        if isdirectory(buffer.path)
+            return buffer.path
+        endif
         call buffer.change()
     elseif key ==# 'CTRL-T'
         execute 'tabnew'
@@ -377,6 +385,8 @@ function! s:change(result) " {{{
     elseif key ==# 'CTRL-V'
         execute 'vsplit'
         call buffer.change()
+    elseif key ==# 'CTRL-_'
+        return fnamemodify(buffer.dir(),':p:h:h')
     endif
     return ''
 endfunction " }}}
