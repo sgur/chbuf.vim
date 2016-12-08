@@ -357,10 +357,14 @@ endfunction " }}}
 
 function! s:change(result) " {{{
     if !has_key(a:result, 'value')
-        return
+        return ''
     endif
     let buffer = a:result.value
     let key = a:result.key
+
+    if isdirectory(buffer.path)
+        return buffer.path
+    endif
 
     if key ==# 'CTRL-M'
         call buffer.change()
@@ -374,10 +378,17 @@ function! s:change(result) " {{{
         execute 'vsplit'
         call buffer.change()
     endif
+    return ''
 endfunction " }}}
 
 function! s:choose_path_interactively(path_objects) " {{{
     return s:change(s:prompt(a:path_objects))
+endfunction " }}}
+
+function! s:change_current_internal(glob_pattern) abort " {{{
+    let buffers = s:get_glob_objects(a:glob_pattern)
+    let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'relative')
+    return s:choose_path_interactively(buffers)
 endfunction " }}}
 
 function! chbuf#change_buffer(ignored_pattern) " {{{
@@ -393,9 +404,12 @@ function! chbuf#change_mixed(ignored_pattern) " {{{
 endfunction " }}}
 
 function! chbuf#change_current(glob_pattern) " {{{
-    let buffers = s:get_glob_objects(a:glob_pattern)
-    let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'relative')
-    return s:choose_path_interactively(buffers)
+    let pattern = a:glob_pattern . (empty(a:glob_pattern) ? '*' : isdirectory(expand(a:glob_pattern)) ? '/*' : '')
+    while 1
+        let result = s:change_current_internal(pattern)
+        if empty(result) | break | endif
+        let pattern = result . '*'
+    endwhile
 endfunction " }}}
 
 function! chbuf#change_oldfiles(ignored_pattern)  "{{{
