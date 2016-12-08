@@ -6,9 +6,7 @@ set cpoptions&vim
 
 " {{{ Data Source: Internal
 function! s:init()  " {{{
-    let s:oldfiles = get(g:, 'chbuf_filter_out_deleted_oldfiles', 0)
-                \ ? filter(copy(v:oldfiles), 'filereadable(expand(v:val)) || isdirectory(expand(v:val))')
-                \ : copy(v:oldfiles)
+    let s:oldfiles = filter(copy(v:oldfiles), 'filereadable(expand(v:val)) || isdirectory(expand(v:val))')
 endfunction " }}}
 " }}}
 
