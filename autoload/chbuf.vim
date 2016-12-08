@@ -100,7 +100,7 @@ function! s:buffer_from_path(path) " {{{
 endfunction " }}}
 
 function! s:buffer_from_relative_path(relative) " {{{
-    let absolute = join([getcwd(), a:relative], g:chbuf#common#unescaped_path_seg_sep)
+    let absolute = fnamemodify(a:relative, ':p')
 
     if isdirectory(absolute)
         let absolute = s:ensure_ends_with_seg_sep(absolute)
