@@ -5,11 +5,17 @@ set cpoptions&vim
 
 
 " {{{ Data Source: Internal
-
-
+function! s:init()  " {{{
+    let s:oldfiles = get(g:, 'chbuf_filter_out_deleted_oldfiles', 0)
+                \ ? filter(copy(v:oldfiles), 'filereadable(expand(v:val)) || isdirectory(expand(v:val))')
+                \ : copy(v:oldfiles)
+endfunction " }}}
 " }}}
 
 " {{{ Data Source: External
+function! chbuf#oldfiles#clone()  " {{{
+    return copy(s:oldfiles)
+endfunction " }}}
 
 function! chbuf#oldfiles#add(bufnr) abort " {{{
     if !chbuf#common#is_good_buffer(a:bufnr)
@@ -19,14 +25,16 @@ function! chbuf#oldfiles#add(bufnr) abort " {{{
     let max_entries = get(map(filter(split(&viminfo, ','), 'v:val[0] ==# "''"'), 'v:val[1:]'), 0, 100)
 
     let path = simplify(fnamemodify(bufname(a:bufnr), ':p:~'))
-    let idx = index(v:oldfiles, path)
+    let idx = index(s:oldfiles, path)
     if idx > -1
-        call remove(v:oldfiles, idx)
+        call remove(s:oldfiles, idx)
     endif
-    call insert(v:oldfiles, path)
-    let v:oldfiles = v:oldfiles[: max_entries-1]
+    call insert(s:oldfiles, path)
+    let s:oldfiles = s:oldfiles[: max_entries-1]
 endfunction " }}}
 " }}}
+
+call s:init()
 
 
 let &cpoptions = s:save_cpo

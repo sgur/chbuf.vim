@@ -150,7 +150,7 @@ function! s:get_glob_objects(glob_pattern) " {{{
 endfunction " }}}
 
 function! s:get_oldfiles(ignored_pattern) abort "{{{
-    let result = map(copy(v:oldfiles), 's:buffer_from_path(v:val)')
+    let result = map(chbuf#oldfiles#clone(), 's:buffer_from_path(v:val)')
 
     if a:ignored_pattern ==# ''
         return result
