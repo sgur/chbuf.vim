@@ -458,6 +458,14 @@ function! chbuf#spotlight(query) " {{{
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'path')
     return s:choose_path_interactively(buffers)
 endfunction " }}}
+
+function! chbuf#path_complete(arglead, cmdline, cursorpos) abort "{{{
+  let arglead = fnamemodify(a:arglead, ':p')
+  return stridx(fnamemodify(arglead, ':t'), '*') >= 0
+              \ ? [arglead]
+              \ : map(filter(glob(arglead . '*', 1, 1), 'isdirectory(v:val)'), 'fnamemodify(v:val, '':~:.'')')
+endfunction "}}}
+
 " }}}
 
 

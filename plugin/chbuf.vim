@@ -12,7 +12,7 @@ set cpoptions&vim
 
 command! -nargs=* ChangeBuffer call chbuf#change_buffer(<q-args>)
 command! -nargs=* ChangeMixed call chbuf#change_mixed(<q-args>)
-command! -nargs=? ChangeFileSystem call chbuf#change_current(<q-args>)
+command! -nargs=? -complete=customlist,chbuf#path_complete ChangeFileSystem call chbuf#change_current(<q-args>)
 command! -nargs=? ChangeOldfiles call chbuf#change_oldfiles(<q-args>)
 
 
