@@ -16,6 +16,10 @@ command! -nargs=? -complete=customlist,chbuf#path_complete ChangeFileSystem call
 command! -nargs=? ChangeOldfiles call chbuf#change_oldfiles(<q-args>)
 
 
+if has('files') " https://github.com/mattn/files
+    command! -nargs=? -complete=dir ChangeFiles call chbuf#files(<q-args>)
+endif
+
 if has('mac')
     command! -nargs=+ -complete=custom,chbuf#spotlight_query_completion Spotlight call chbuf#spotlight(<q-args>)
     command! -nargs=+ -complete=custom,chbuf#spotlight_query_completion SpotlightCurrent call chbuf#spotlight_current(<q-args>)

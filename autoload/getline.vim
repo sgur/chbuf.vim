@@ -273,7 +273,19 @@ let s:transition_from_key =
     \, '@': function('s:self_insert')
     \}
 
-function! s:get_line_custom(config) " {{{
+function! s:update_state(config, state) "{{{
+    let candidates = a:config.callback(a:state.contents)
+    if candidates == {}
+        echon a:config.empty
+        return {}
+    endif
+    let a:state.data = get(candidates, 'data', '')
+    let a:state.hint = get(candidates, 'hint', '')
+
+    return a:state
+endfunction "}}}
+
+function! s:get_line_custom(config, ...) " {{{
     let state = s:make_state(a:config)
     if state == {}
         echon a:config.empty
@@ -284,7 +296,15 @@ function! s:get_line_custom(config) " {{{
     echon displayed . "\r" . state.show_prompt_and_contents()
 
     while 1
-        let key = getchar()
+        if a:0
+            let key = getchar(0)
+            if key == 0
+                let state = s:update_state(a:config, state)
+                sleep 100m
+            endif
+        else
+            let key = getchar()
+        endif
 
         if type(key) == type(0)
             if has_key(s:key_from_int, key)
@@ -335,7 +355,7 @@ function! s:get_line_custom(config) " {{{
     endwhile
 endfunction " }}}
 
-function! getline#get_line_reactively_override_keys(callback, key_handlers) " {{{
+function! getline#get_line_reactively_override_keys(callback, key_handlers, ...) " {{{
     let config = {}
 
     if has('unix') && (&termencoding ==# 'utf-8' || &encoding ==# 'utf-8')
@@ -354,7 +374,7 @@ function! getline#get_line_reactively_override_keys(callback, key_handlers) " {{
     let merged = extend(copy(s:transition_from_key), a:key_handlers)
     let config['transitions'] = merged
 
-    return s:get_line_custom(config)
+    return s:get_line_custom(config, a:0)
 endfunction " }}}
 
 function! getline#get_line_reactively(callback) " {{{

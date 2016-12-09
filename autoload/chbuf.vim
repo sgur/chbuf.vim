@@ -294,6 +294,8 @@ function! s:get_line_callback(cache, input) " {{{
         return {}
     endif
 
+    call sort(matching, {val1, val2 -> strlen(val1.suffix) > strlen(val2.suffix)})
+
     return {'data': matching, 'hint': s:render_hint(matching)}
 endfunction " }}}
 
@@ -489,6 +491,39 @@ function! chbuf#path_complete(arglead, cmdline, cursorpos) abort "{{{
               \ ? [arglead]
               \ : map(filter(glob(arglead . '*', 1, 1), 'isdirectory(v:val)'), 'fnamemodify(v:val, '':~:.'')')
 endfunction "}}}
+
+function! s:out_cb(ch, msg) abort "{{{
+    call add(s:buffers, s:buffer_from_path(a:msg))
+    let s:candidates = s:set_segmentwise_shortest_unique_suffixes(s:buffers, 'path')
+endfunction "}}}
+
+function! s:get_files_callback(input) " {{{
+    let matching = s:filter_matching(a:input, copy(s:candidates))
+
+    if len(matching) == 0 && strlen(a:input) > 0
+        return {}
+    endif
+
+    call sort(matching, {val1, val2 -> strlen(val1.suffix) > strlen(val2.suffix)})
+
+    return {'data': matching, 'hint': s:render_hint(matching)}
+endfunction " }}}
+
+function! chbuf#files(initial_dir) "{{{
+    let cmd =['files', '-M=1000']
+    if !empty(a:initial_dir)
+        let cmd += [escape(expand(a:initial_dir), '\')]
+    endif
+    let s:buffers = []
+    let s:candidates = []
+    let job = job_start(cmd, {'out_cb': function('s:out_cb'), 'err_cb': {ch, msg -> execute('echoerr msg', 0)}})
+    try
+        call s:change(getline#get_line_reactively_override_keys(function('s:get_files_callback'), s:key_handlers, 1))
+    finally
+        call job_stop(job)
+    endtry
+endfunction "}}}
+
 
 " }}}
 
