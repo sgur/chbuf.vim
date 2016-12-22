@@ -149,23 +149,23 @@ function! s:get_glob_objects(glob_pattern) " {{{
     return paths
 endfunction " }}}
 
-function! s:get_oldfiles(ignored_pattern) abort "{{{
+function! s:get_oldfiles(filter_pattern) abort "{{{
     let result = map(chbuf#oldfiles#clone(), 's:buffer_from_path(v:val)')
 
-    if a:ignored_pattern ==# ''
+    if a:filter_pattern ==# ''
         return result
     endif
 
-    let escaped = escape(a:ignored_pattern, "'")
-    return filter(result, printf("v:val.path !~ '%s'", escaped))
+    let escaped = escape(a:filter_pattern, "'")
+    return filter(result, printf("v:val.path =~ '%s'", escaped))
 endfunction " }}}
 
-function! s:get_buffers(ignored_pattern) " {{{
+function! s:get_buffers(filter_pattern) " {{{
     let current_bufnr = bufnr('%')
     return filter(map(
                 \   filter(range(1, bufnr('$')), 'bufexists(v:val) && chbuf#common#is_good_buffer(v:val) && v:val != current_bufnr'),
                 \   's:buffer_from_number(v:val, bufname(v:val))'),
-                \ '!empty(v:val.path) && v:val.path =~ a:ignored_pattern')
+                \ '!empty(v:val.path) && v:val.path =~ a:filter_pattern')
 endfunction " }}}
 
 function! s:segmentwise_shortest_unique_prefix(cur, ref) " {{{
@@ -401,14 +401,14 @@ function! s:change_current_internal(glob_pattern) abort " {{{
     return s:choose_path_interactively(buffers)
 endfunction " }}}
 
-function! chbuf#change_buffer(ignored_pattern) " {{{
-    let buffers = s:get_buffers(a:ignored_pattern)
+function! chbuf#change_buffer(filter_pattern) " {{{
+    let buffers = s:get_buffers(a:filter_pattern)
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'path')
     return s:choose_path_interactively(buffers)
 endfunction " }}}
 
-function! chbuf#change_mixed(ignored_pattern) " {{{
-    let buffers = extend(s:get_buffers(a:ignored_pattern), s:get_oldfiles(a:ignored_pattern))
+function! chbuf#change_mixed(filter_pattern) " {{{
+    let buffers = extend(s:get_buffers(a:filter_pattern), s:get_oldfiles(a:filter_pattern))
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'path')
     return s:choose_path_interactively(buffers)
 endfunction " }}}
@@ -422,8 +422,8 @@ function! chbuf#change_current(glob_pattern) " {{{
     endwhile
 endfunction " }}}
 
-function! chbuf#change_oldfiles(ignored_pattern)  "{{{
-    let buffers = s:get_oldfiles(a:ignored_pattern)
+function! chbuf#change_oldfiles(filter_pattern)  "{{{
+    let buffers = s:get_oldfiles(a:filter_pattern)
     let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, 'path')
     return s:choose_path_interactively(buffers)
 endfunction "}}}
