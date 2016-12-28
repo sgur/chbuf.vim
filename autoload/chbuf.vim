@@ -360,8 +360,7 @@ let s:key_handlers =
     \}
 
 function! s:prompt(buffers) " {{{
-    let result = getline#get_line_reactively_override_keys(function('s:get_line_callback', [a:buffers]), s:key_handlers)
-    return result
+    return getline#get_line_reactively_override_keys(function('s:get_line_callback', [a:buffers]), s:key_handlers)
 endfunction " }}}
 
 function! s:change(result) " {{{
@@ -488,6 +487,36 @@ function! chbuf#path_complete(arglead, cmdline, cursorpos) abort "{{{
   return stridx(fnamemodify(arglead, ':t'), '*') >= 0
               \ ? [arglead]
               \ : map(filter(glob(arglead . '*', 1, 1), 'isdirectory(v:val)'), 'fnamemodify(v:val, '':~:.'')')
+endfunction "}}}
+
+function! chbuf#external(path_type, args, ...) abort
+    if !a:0
+        call s:change_external(a:path_type, systemlist(join(a:args)))
+    else " with timeout
+        let job_nr = job_start(a:args, {'close_cb': function('s:external_on_close_callback', [a:path_type])})
+        call timer_start(a:1, {timer -> job_stop(job_nr)})
+    endif
+endfunction
+
+function! s:change_external(path_type, raw_list) abort "{{{
+    let func = a:path_type is# 'path' ? 's:buffer_from_path' : 's:buffer_from_relative_path'
+    let buffers = map(filter(a:raw_list, 's:is_file_system_object(v:val)'), func . '(v:val)')
+    let buffers = s:set_segmentwise_shortest_unique_suffixes(buffers, a:path_type)
+    call s:choose_path_interactively(buffers)
+endfunction "}}}
+
+function! s:external_on_close_callback(path_type, ch) abort "{{{
+    let result = []
+    let status = ch_status(a:ch)
+    while status is# 'buffered' || status is# 'open'
+        try
+            let result += [ch_read(a:ch)]
+        catch /^Vim\%((\a\+)\)\=:E906/
+            break
+        endtry
+        let status = ch_status(a:ch)
+    endwhile
+    call s:change_external(a:path_type, result)
 endfunction "}}}
 
 " }}}
