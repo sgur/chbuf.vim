@@ -18,7 +18,7 @@ command! -nargs=? ChangeOldfiles call chbuf#change_oldfiles(<q-args>)
 
 if executable('files')
     command! -nargs=? -complete=customlist,chbuf#path_complete ChangeFiles
-                \ call chbuf#external('path', ['files', '-s', '-a', '-A', <f-args>], 1000)
+                \ call chbuf#external('path', ['files', '-a', '-A', <f-args>], 1000)
 endif
 
 if executable('git')
