@@ -6,8 +6,13 @@ set cpoptions&vim
 
 " {{{ Data Source: Internal
 function! s:init()  " {{{
-    let s:oldfiles = filter(copy(v:oldfiles), 'filereadable(expand(v:val)) || isdirectory(expand(v:val))')
+    let s:oldfiles = filter(copy(v:oldfiles), 's:path_exists(v:val)')
 endfunction " }}}
+
+function! s:path_exists(path) abort "{{{
+    let full_path = fnamemodify(a:path, ':p')
+    return filereadable(full_path) || isdirectory(full_path)
+endfunction "}}}
 " }}}
 
 " {{{ Data Source: External
