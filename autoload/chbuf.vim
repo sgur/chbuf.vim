@@ -5,6 +5,10 @@ set cpoptions&vim
 
 
 " {{{ Data Source: Internal
+function! s:edit() abort "{{{
+    return exists(':drop') ? 'drop' : 'edit'
+endfunction "}}}
+
 function! s:change_to_number() dict " {{{
     execute 'silent' 'buffer' self.number
 endfunction " }}}
@@ -70,7 +74,7 @@ function! s:buffer_from_number(number, name) " {{{
 endfunction " }}}
 
 function! s:change_to_path() dict " {{{
-    execute 'silent' 'edit' fnameescape(self.path)
+    execute 'silent' s:edit() fnameescape(self.path)
 endfunction " }}}
 
 function! s:path_choosable() dict " {{{
