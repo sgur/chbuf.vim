@@ -6,7 +6,10 @@ set cpoptions&vim
 
 " {{{ Data Source: Internal
 function! s:init()  " {{{
-    let s:oldfiles = filter(copy(v:oldfiles), 's:path_exists(v:val)')
+    let s:oldfiles = copy(v:oldfiles)
+    if has('timers')
+        call timer_start(1000, {timer -> filter(s:oldfiles, {key, val -> s:path_exists(v:val) })})
+    endif
 endfunction " }}}
 
 function! s:path_exists(path) abort "{{{
